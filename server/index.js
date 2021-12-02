@@ -6,7 +6,7 @@ const http = require("http");
 // users.js
 const { addUser, removeUser, getUser, getUsersInRoom } = require("./users");
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4000;
 
 // 2. 라우터 설정
 const router = require("./router");

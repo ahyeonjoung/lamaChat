@@ -1,15 +1,22 @@
-import React, { useEffect, useState, useReducer ,useRef} from "react";
-import { IoIosInformationCircleOutline } from 'react-icons/io'
-import { RiEmotionHappyLine } from 'react-icons/ri'
-import queryString from "query-string";
-import io from "socket.io-client";
-import "./Chat.css";
 import styled from 'styled-components'
-import Profile from './profile.jpg'
-// 하위 컴포넌트
-import Messages from "../Messages/Messages";
-import Input from "../Input/Input";
-
+import Profile from '../../assets/profile.jpg'
+import queryString from "query-string";
+import { IoIosInformationCircleOutline } from 'react-icons/io'
+import { IoImageOutline } from 'react-icons/io5'
+import ChatList from './ReceiveChat'
+import SendChat from './SendChat'
+import { AlwaysScrollSection } from '../../components/AlwaysScrollSection'
+import { RiEmotionHappyLine } from 'react-icons/ri'
+import { FaRegHeart } from 'react-icons/fa'
+import { useEffect, useRef, useCallback, useState } from 'react'
+import { withRouter } from 'react-router';
+import { useSelector } from 'react-redux'
+import io from 'socket.io-client';
+import axios from 'axios'
+import SockJS from 'sockjs-client'
+import React from 'react'
+import Messages from "./Messages/Messages"
+import Input from "./Input/Input"
 
 
 const Wrapper = styled.div`
@@ -17,6 +24,14 @@ const Wrapper = styled.div`
   flex-direction: column;
   width: 550px;
   border: 1px solid #dbdbdb;
+  height: 600px;
+`
+const InputWrapper = styled.div`
+  width: 100%;
+  min-height: 60px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 `
 const NicknameBox = styled.div`
   width: 100%;
@@ -43,12 +58,6 @@ const ProfileWrapper = styled.div`
   font-size: 14px;
   font-weight: bold;
 `
-const AlwaysScrollWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  overflow: scroll;
-  height:590px;
-`
 const ChatWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -69,9 +78,15 @@ const Input2 = styled.input`
   border: 1px solid white;
   outline: none;
 `
+const AlwaysScrollWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  overflow: scroll;
+  height:600px;
+`
 let socket;
 
-const Chat = ({ location }) => {
+function ChatBox({location}) {
   const scrollRef = useRef()
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
@@ -134,15 +149,20 @@ const Chat = ({ location }) => {
 
   console.log(message, messages);
   console.log(users, "users");
+const scrollToBottom = useCallback(() => {
+    // 스크롤 내리기
+    scrollRef?.current?.scrollTo(0, 10000)
+  }, [])
+  useEffect(() => {
+    scrollToBottom()
+  }, [])
+  
+  
 
-  // return <h1>Chat</h1>;
-  // 1.roominfo
-  // 2.messages
-  // 3.input
+
   return (
     <Wrapper>
-         
-         <NicknameBox>
+      <NicknameBox>
         <ProfileWrapper>
           <ProfileImage src={Profile} />
           <p style={{ marginTop: '17px' }}>as_dkjf </p>
@@ -153,31 +173,67 @@ const Chat = ({ location }) => {
       </NicknameBox>
 
       <AlwaysScrollWrapper ref={scrollRef}>
-        
-        
-            <Messages messages={messages} name={name} />
-            </AlwaysScrollWrapper>
-            <ChatWrapper>
-            <InputBox>
-            <RiEmotionHappyLine
+        <ChatList
+          date="2021년 10월 22일 오후 7:18"
+          contents="엥 핳거야???????????????"
+        />
+        <SendChat contents="아니 내말이" />
+        <SendChat contents="나왜붙었냐고" />
+        <ChatList contents="헐씈ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ" />
+        <SendChat
+          date="2021년 11월 1일 오후 6:31"
+          contents="너가아이패드라니.."
+        />
+        <ChatList contents="누구보다 잘쓰는중,," />
+        <ChatList
+          date="2021년 11월 14일 오후 12:38"
+          contents="요니 이제 저기 포토스팟 됐넼ㅋㅋㅋㅋㅋㅋㅌㅋㅌㅌㅋㅋ"
+        />
+        <SendChat
+          date="2021년 11월 14일 오후 9:19"
+          contents="ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ응ㅎ"
+        />
+        <SendChat
+          date="2021년 11월 14일 오후 9:19"
+          contents="ㅁㅊㅋㅋㅋㅋㅋㅋㅋㅋㅋ방밖으로 안나갈라고그러는거여???ㅋㅋㅋㅋㅋㅋ개꿀이다"
+        />
+        <ChatList contents="ㅋㅋㅋㅋㅋㅋㅌㅌㅋㅋㅋㅋㅋㅋㅋㅋ행복,,,," />
+      </AlwaysScrollWrapper>
+
+      <ChatWrapper>
+        <InputBox>
+          <RiEmotionHappyLine
             style={{
               height: '40px',
               fontSize: '30px',
               marginLeft: '10px',
             }}
           />
+          <Input2 placeholder="메세지입력..." />
+          <IoIosInformationCircleOutline
+            style={{
+              height: '40px',
+              fontSize: '30px',
+              marginLeft: '10px',
+            }}
+          />
+          <FaRegHeart
+            style={{
+              height: '40px',
+              fontSize: '25px',
+              marginLeft: '10px',
+            }}
+          />
+        </InputBox>
+      </ChatWrapper>
+      <Messages messages={messages} name={name} />
             <Input
               message={message}
               setMessage={setMessage}
               sendMessage={sendMessage}
             />
-            </InputBox>
-            </ChatWrapper>
-           
-  
-          
-</Wrapper>
-  );
-};
+    </Wrapper>
+  )
+}
 
-export default Chat;
+export default withRouter(ChatBox)

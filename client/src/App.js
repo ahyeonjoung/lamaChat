@@ -1,14 +1,20 @@
 import React from "react";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route,Switch } from "react-router-dom";
 
 import JoinRoom from "./components/JoinRoom/JoinRoom";
 import Chat from "./components/Chat/Chat";
+import UploadPage from "./components/pages/upload/UploadPage"
+import MainPage from "./components/pages/main/MainPage"
+import ChatPage from "./components/pages/chat/ChatPage";
 
 // 1. Router 경로 설정
 const App = () => (
   <Router>
-    <Route path="/lamaChat/" exact component={JoinRoom} />
-    <Route path="/lamaChat/chat" component={Chat} />
+    <Switch>
+     <Route exact path="/" component={MainPage } />
+    <Route path="/chat" component={ChatPage} />
+    <Route exact path="/upload" component={UploadPage } />
+    </Switch>
   </Router>
 );
 

@@ -2,28 +2,45 @@ import React from "react";
 import "./Input.css";
 
 import Button from "@material-ui/core/Button";
+import styled from "styled-components";
+import { IoIosInformationCircleOutline } from 'react-icons/io'
+import { FaRegHeart } from 'react-icons/fa'
+
+const Input2 = styled.input`
+  height: 35px;
+  width: 370px;
+  border: 1px solid white;
+  outline: none;
+`
 
 const Input = ({ message, setMessage, sendMessage }) => (
   //   return <div className="Input"></div>;
   // <form className="inputForm">
-  <div className="inputContainer">
-    <input
-      className="input"
+  <>
+  <Input2
+
       type="text"
-      placeholder="메세지를 입력하세요"
+      placeholder="메세지입력..."
       value={message}
       onChange={(e) => setMessage(e.target.value)}
       onKeyPress={(e) => (e.key === "Enter" ? sendMessage(e) : null)}
     />
-    <Button
-      variant="contained"
-      color="primary"
-      className="inputButton"
-      onClick={(e) => sendMessage(e)}
-    >
-      send
-    </Button>
-  </div>
-  // </form>
+    <IoIosInformationCircleOutline
+            style={{
+              height: '40px',
+              fontSize: '30px',
+              marginLeft: '10px',
+            }}
+          />
+          <FaRegHeart
+            style={{
+              height: '40px',
+              fontSize: '25px',
+              marginLeft: '10px',
+            }}
+          />
+   
+    </>
+
 );
 export default Input;
